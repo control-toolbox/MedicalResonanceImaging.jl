@@ -1,10 +1,12 @@
 using Documenter
 
 makedocs(
+    warnonly = :cross_references,
     sitename = "MRI.jl",
-    format = Documenter.HTML(prettyurls = false),
+    format = Documenter.HTML(prettyurls = false, size_threshold_ignore = ["application-mri-saturation.md"]),
     pages = [
-        "Introduction" => "index.md"
+        "Introduction" => "index.md",
+        "MRI: saturation problem" => "application-mri-saturation.md",
     ]
 )
 
