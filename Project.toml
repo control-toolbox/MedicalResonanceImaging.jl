@@ -1,4 +1,4 @@
 name = "MRI"
 uuid = "93e74489-f9a4-430a-8db2-2b89ccbb1b9e"
 authors = ["Olivier Cots <olivier.cots@irit.fr>"]
-version = "0.1.0"
+version = "0.1.1"
