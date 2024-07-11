@@ -7,3 +7,12 @@ NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 OptimalControl = "5f98b655-cc9a-415a-b60e-744165666948"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
+
+[compat]
+CTFlows = "0.4.4"
+Documenter = "1.5.0"
+NLPModelsIpopt = "0.10.2"
+NonlinearSolve = "3.13.1"
+OptimalControl = "0.9.1"
+OrdinaryDiffEq = "6.85.0"
+Suppressor = "0.2.7"
