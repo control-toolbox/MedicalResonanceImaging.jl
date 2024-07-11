@@ -3,10 +3,13 @@ using Documenter
 makedocs(
     warnonly = :cross_references,
     sitename = "MRI.jl",
-    format = Documenter.HTML(prettyurls = false, size_threshold_ignore = ["application-mri-saturation.md"]),
+    format = Documenter.HTML(
+        prettyurls = false, 
+        size_threshold_ignore = ["saturation.md", "bloch-equation.md"]),
     pages = [
-        "Introduction" => "index.md",
-        "MRI: saturation problem" => "application-mri-saturation.md",
+        "Introduction"       => "index.md",
+        "Bloch equation"     => "bloch-equation.md",
+        "Saturation problem" => "saturation.md",
     ]
 )
 
