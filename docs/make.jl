@@ -2,7 +2,7 @@ using Documenter
 
 makedocs(
     warnonly = :cross_references,
-    sitename = "MRI.jl",
+    sitename = "Medical Resonance Imaging",
     format = Documenter.HTML(
         prettyurls = false, 
         size_threshold_ignore = ["saturation.md", "bloch-equation.md"]),
