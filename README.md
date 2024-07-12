@@ -1,16 +1,16 @@
-# MRI.jl
+# MRI
 
-[ci-img]: https://github.com/control-toolbox/MRI.jl/actions/workflows/CI.yml/badge.svg?branch=main
-[ci-url]: https://github.com/control-toolbox/MRI.jl/actions/workflows/CI.yml?query=branch%3Amain
+[ci-img]: https://github.com/control-toolbox/MRI/actions/workflows/CI.yml/badge.svg?branch=main
+[ci-url]: https://github.com/control-toolbox/MRI/actions/workflows/CI.yml?query=branch%3Amain
 
-[co-img]: https://codecov.io/gh/control-toolbox/MRI.jl/branch/main/graph/badge.svg?token=YM5YQQUSO3
-[co-url]: https://codecov.io/gh/control-toolbox/MRI.jl
+[co-img]: https://codecov.io/gh/control-toolbox/MRI/branch/main/graph/badge.svg?token=YM5YQQUSO3
+[co-url]: https://codecov.io/gh/control-toolbox/MRI
 
 [doc-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[doc-dev-url]: https://control-toolbox.org/MRI.jl/dev/
+[doc-dev-url]: https://control-toolbox.org/MRI/dev/
 
 [doc-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[doc-stable-url]: https://control-toolbox.org/MRI.jl/stable/
+[doc-stable-url]: https://control-toolbox.org/MRI/stable/
 
 Optimal control in Medical Resonance Imaging by Nuclear Magnetic Resonance.
 
