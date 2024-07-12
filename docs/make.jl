@@ -19,6 +19,6 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/control-toolbox/MRI.jl.git",
+    repo = "github.com/control-toolbox/mri.git",
     devbranch = "main"
 )
