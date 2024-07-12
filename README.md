@@ -15,7 +15,7 @@
 Optimal control in Medical Resonance Imaging by Nuclear Magnetic Resonance.
 
 This repo is part of the [control-toolbox ecosystem](https://github.com/control-toolbox). 
-The control-toolbox ecosystem gathers `Julia` packages for mathematical control and applications. The root package is [`OptimalControl.jl`](https://github.com/control-toolbox/OptimalControl.jl) which aims to provide tools to modelise and solve optimal control problems by direct and indirect methods. [![doc OptimalControl.jl](https://img.shields.io/badge/doc-OptimalControl.jl-blue)](http://control-toolbox.org/docs/optimalcontrol)
+The control-toolbox ecosystem gathers `Julia` packages for mathematical control and applications. The root package is [`OptimalControl.jl`](https://github.com/control-toolbox/OptimalControl.jl) which aims to provide tools to modelise and solve optimal control problems by direct and indirect methods. [![doc OptimalControl.jl](https://img.shields.io/badge/doc-OptimalControl.jl-blue)](http://control-toolbox.org/OptimalControl.jl)
 
 | **Documentation**  | **Code Status**  |
 |:-------------------|:-----------------|
