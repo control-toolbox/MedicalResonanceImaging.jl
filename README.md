@@ -1,16 +1,16 @@
 # Optimal control in Medical Resonance Imaging
 
-[ci-img]: https://github.com/control-toolbox/mri/actions/workflows/CI.yml/badge.svg?branch=main
-[ci-url]: https://github.com/control-toolbox/mri/actions/workflows/CI.yml?query=branch%3Amain
+[ci-img]: https://github.com/control-toolbox/medical_resonance_imaging/actions/workflows/CI.yml/badge.svg?branch=main
+[ci-url]: https://github.com/control-toolbox/medical_resonance_imaging/actions/workflows/CI.yml?query=branch%3Amain
 
-[co-img]: https://codecov.io/gh/control-toolbox/mri/branch/main/graph/badge.svg?token=YM5YQQUSO3
-[co-url]: https://codecov.io/gh/control-toolbox/mri
+[co-img]: https://codecov.io/gh/control-toolbox/medical_resonance_imaging/branch/main/graph/badge.svg?token=YM5YQQUSO3
+[co-url]: https://codecov.io/gh/control-toolbox/medical_resonance_imaging
 
 [doc-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[doc-dev-url]: https://control-toolbox.org/mri/dev/
+[doc-dev-url]: https://control-toolbox.org/medical_resonance_imaging/dev/
 
 [doc-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[doc-stable-url]: https://control-toolbox.org/mri/stable/
+[doc-stable-url]: https://control-toolbox.org/medical_resonance_imaging/stable/
 
 Optimal control in Medical Resonance Imaging by Nuclear Magnetic Resonance.
 
