@@ -12,8 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
-      - name: Install registry
-        run: julia -e 'using Pkg; Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/control-toolbox/ct-registry.git"))' 
       - uses: julia-actions/julia-runtest@latest
       - uses: julia-actions/julia-processcoverage@latest
       - uses: codecov/codecov-action@v4
