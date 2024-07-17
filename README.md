@@ -6,7 +6,7 @@
 [co-img]: https://codecov.io/gh/control-toolbox/medical_resonance_imaging/branch/main/graph/badge.svg?token=YM5YQQUSO3
 [co-url]: https://codecov.io/gh/control-toolbox/medical_resonance_imaging
 
-[doc-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[doc-dev-img]: https://img.shields.io/badge/docs-dev-8A2BE2.svg
 [doc-dev-url]: https://control-toolbox.org/medical_resonance_imaging/dev/
 
 [doc-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
