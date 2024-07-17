@@ -1,4 +1,5 @@
 using Test
+using MedicalResonanceImaging
 
 #
 @testset verbose = true showtiming = true "Base" begin
