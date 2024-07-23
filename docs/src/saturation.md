@@ -594,12 +594,12 @@ function shoot!(s, pz0, t1, t2, t3, tf, q1, p1, q2, p2, q3, p3)
     s[3] = p3[1]                          # H1 = H01 = 0 on the vertical
     s[4] = q3[1]                          # singular line, y=0
     s[5] = qf[2]                          # z(tf) = 0
-    s[ 6: 7] .= q1 - q1_
-    s[ 8: 9] .= p1 - p1_
-    s[10:11] .= q2 - q2_
-    s[12:13] .= p2 - p2_
-    s[14:15] .= q3 - q3_
-    s[16:17] .= p3 - p3_
+    s[ 6: 7] = q1 - q1_
+    s[ 8: 9] = p1 - p1_
+    s[10:11] = q2 - q2_
+    s[12:13] = p2 - p2_
+    s[14:15] = q3 - q3_
+    s[16:17] = p3 - p3_
 
 end
 nothing # hide
