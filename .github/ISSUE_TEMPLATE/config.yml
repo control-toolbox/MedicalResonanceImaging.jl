@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Medical Resonance Imaging support
+    url: https://github.com/control-toolbox/medical_resonance_imaging/discussions
+    about: Please ask and answer questions about medical_resonance_imaging here.
+  - name: Control-toolbox organisation support
+    url: https://github.com/orgs/control-toolbox/discussions
+    about: For more general questions about control-toolbox ecosystem it's here.
