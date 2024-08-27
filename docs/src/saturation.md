@@ -179,13 +179,8 @@ We define a custom plot function to plot the solution inside the Bloch ball.
     <code>spin_plot</code> — <span class="docstring-category">Function</span>
 </header>
 <section style="display: none;"><div><pre><code class="language-julia hljs">using Plots.PlotMeasures
-using CTFlows
 
 function spin_plot(sol; kwargs...)
-
-    if sol isa CTFlows.OptimalControlFlowSolution
-        sol = CTFlows.OptimalControlSolution(sol)
-    end
 
     y2 = cos(asin(zs))
     y1 = -y2
@@ -231,12 +226,7 @@ end</code><button class="copy-button fa-solid fa-copy" aria-label="Copy this cod
 
 ```@example main
 using Plots.PlotMeasures # hide
-using CTFlows # hide
 function spin_plot(sol; kwargs...) # hide
-
-    if sol isa CTFlows.OptimalControlFlowSolution # hide
-        sol = CTFlows.OptimalControlSolution(sol) # hide
-    end # hide
 
     y2 = cos(asin(zs)) # hide
     y1 = -y2 # hide
@@ -376,10 +366,6 @@ and its derivative along the solution computed by the direct method.
 </header>
 <section style="display: none;"><div><pre><code class="language-julia hljs">function switching_plot(sol, H1, H01; kwargs...)
 
-    if sol isa CTFlows.OptimalControlFlowSolution
-        sol = CTFlows.OptimalControlSolution(sol)
-    end
-
     t  = sol.times
     u  = sol.control
     q  = sol.state
@@ -426,10 +412,6 @@ the first singular arc, the switching function is not always zero.
 
 ```@example main
 function switching_plot(sol, H1, H01; kwargs...) # hide
-
-    if sol isa CTFlows.OptimalControlFlowSolution # hide
-        sol = CTFlows.OptimalControlSolution(sol) # hide
-    end # hide
 
     t  = sol.times  # hide
     u  = sol.control # hide
