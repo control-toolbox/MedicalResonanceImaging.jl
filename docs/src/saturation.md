@@ -185,10 +185,10 @@ function spin_plot(sol; kwargs...)
     y2 = cos(asin(zs))
     y1 = -y2
 
-    t = sol.times
-    y = t -> sol.state(t)[1]
-    z = t -> sol.state(t)[2]
-    u = sol.control
+    t = time_grid(sol)
+    y = t -> state(sol)(t)[1]
+    z = t -> state(sol)(t)[2]
+    u = control(sol)
 
     # styles
     Bloch_ball_style = (seriestype=[:shape, ], color=:grey, linecolor=:black, 
@@ -231,10 +231,10 @@ function spin_plot(sol; kwargs...) # hide
     y2 = cos(asin(zs)) # hide
     y1 = -y2 # hide
 
-    t = sol.times # hide
-    y = t -> sol.state(t)[1] # hide
-    z = t -> sol.state(t)[2] # hide
-    u = sol.control # hide
+    t = time_grid(sol) # hide
+    y = t -> state(sol)(t)[1] # hide
+    z = t -> state(sol)(t)[2] # hide
+    u = control(sol) # hide
 
     # styles # hide
     Bloch_ball_style = (seriestype=[:shape, ], color=:grey, linecolor=:black,  # hide
@@ -283,11 +283,11 @@ for the indirect method. For instance, we need the initial costate
 together with the switching times between bang and sinular arcs and the final time.
 
 ```@example main
-t  = direct_sol.times
-q  = direct_sol.state
-p  = direct_sol.costate
-u  = direct_sol.control
-tf = direct_sol.variable
+t  = time_grid(direct_sol)
+q  = state(direct_sol)
+p  = costate(direct_sol)
+u  = control(direct_sol)
+tf = variable(direct_sol)
 
 t0 = 0
 pz0 = p(t0)[2]
@@ -366,10 +366,10 @@ and its derivative along the solution computed by the direct method.
 </header>
 <section style="display: none;"><div><pre><code class="language-julia hljs">function switching_plot(sol, H1, H01; kwargs...)
 
-    t  = sol.times
-    u  = sol.control
-    q  = sol.state
-    p  = sol.costate
+    t  = time_grid(sol)
+    u  = control(sol)
+    q  = state(sol)
+    p  = costate(sol)
     tf = t[end]
     φ(t) = H1(q(t), p(t))       # switching function
     dφ(t) = H01(q(t), p(t))     # derivative of the switching function
@@ -413,10 +413,10 @@ the first singular arc, the switching function is not always zero.
 ```@example main
 function switching_plot(sol, H1, H01; kwargs...) # hide
 
-    t  = sol.times  # hide
-    u  = sol.control # hide
-    q  = sol.state # hide
-    p  = sol.costate # hide
+    t  = time_grid(sol)  # hide
+    u  = control(sol) # hide
+    q  = state(sol) # hide
+    p  = costate(sol) # hide
     tf = t[end] # hide
     φ(t) = H1(q(t), p(t))       # switching function # hide
     dφ(t) = H01(q(t), p(t))     # derivative of the switching function # hide
