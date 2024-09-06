@@ -1,9 +1,10 @@
-using Test
+using Aqua
 using MedicalResonanceImaging
+using Test
 
 #
 @testset verbose = true showtiming = true "Base" begin
-    for name ∈ (:default,)
+    for name ∈ (:aqua, :default)
         @testset "$(name)" begin
             test_name = Symbol(:test_, name)
             include("$(test_name).jl")
