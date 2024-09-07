@@ -19,5 +19,5 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/control-toolbox/medical_resonance_imaging.git", devbranch="main"
+    repo="github.com/control-toolbox/MedicalResonanceImaging.jl.git", devbranch="main"
 )
