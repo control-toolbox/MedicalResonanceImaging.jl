@@ -6,7 +6,7 @@ makedocs(;
     warnonly=:cross_references,
     sitename="Medical Resonance Imaging",
     format=Documenter.HTML(;
-        repolink = "https://"*repo_url,
+        repolink="https://" * repo_url,
         prettyurls=false,
         size_threshold_ignore=["saturation.md", "bloch-equation.md"],
         assets=[
@@ -21,6 +21,4 @@ makedocs(;
     ],
 )
 
-deploydocs(;
-    repo=repo_url*".git", devbranch="main"
-)
+deploydocs(; repo=repo_url * ".git", devbranch="main")
