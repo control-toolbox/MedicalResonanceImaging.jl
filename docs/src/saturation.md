@@ -107,7 +107,7 @@ Then, we can define the problem with the `OptimalControl.jl` package.
 ```@example main
 using OptimalControl
 
-@def ocp begin
+ocp = @def begin
 
     tf ∈ R, variable
     t ∈ [ 0, tf ], time
