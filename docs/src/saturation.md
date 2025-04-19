@@ -95,14 +95,14 @@ T2 = 0.05
 δ = γ - Γ
 zs = γ / 2δ # ordinate of the horizontal singular line
 
-F0(y, z) = [ -Γ⋅y, γ⋅(1-z) ]
-F1(y, z) = [ -z, y ]
+F0(y, z) = [-Γ⋅y, γ⋅(1-z)]
+F1(y, z) = [-z, y]
 
-q0 = [ 0, 1 ] # initial state: the North pole
+q0 = [0, 1] # initial state: the North pole
 nothing # hide
 ```
 
-Then, we can define the problem with the `OptimalControl.jl` package.
+Then, we can define the problem with OptimalControl.
 
 ```@example main
 using OptimalControl
@@ -110,12 +110,12 @@ using OptimalControl
 ocp = @def begin
 
     tf ∈ R, variable
-    t ∈ [ 0, tf ], time
-    q = [ y, z ] ∈ R², state
+    t ∈ [0, tf ], time
+    q = (y, z) ∈ R², state
     u ∈ R, control
 
     q(0)  == q0
-    q(tf) == [ 0, 0 ]
+    q(tf) == [0, 0]
 
     -1 ≤ u(t) ≤ 1
 
@@ -131,12 +131,9 @@ nothing # hide
 
 ## Direct method
 
-We start to solve the problem with a direct method. The problem is transcribed into a NLP 
-optimization problem thanks to the package `OptimalControl.jl`. The NLP problem is then solved
-by the well-known solver `ipopt` thanks to the package `NLPModelsIpopt.jl`.
+We start to solve the problem with a direct method. The problem is transcribed into a NLP optimization problem by OptimalControl. The NLP problem is then solved by the well-known solver Ipopt thanks to NLPModelsIpopt.
 
-We first start with a coarse grid, with only 50 points. We provide an init to get a solution 
-in the domain $y \le 0$.
+We first start with a coarse grid, with only 50 points. We provide an init to get a solution in the domain $y \le 0$.
 
 ```@example main
 using NLPModelsIpopt
@@ -146,7 +143,7 @@ sol = solve(ocp; grid_size=N, init=(state=[-0.5, 0.0], ), print_level=4)
 nothing # hide
 ```
 
-Then, we plot the solution thanks to `Plots.jl`.
+Then, we plot the solution thanks to Plots.
 
 ```@example main
 using Plots
@@ -186,8 +183,9 @@ function spin_plot(sol; kwargs...)
     y1 = -y2
 
     t = time_grid(sol)
-    y = t -> state(sol)(t)[1]
-    z = t -> state(sol)(t)[2]
+    q = state(sol)
+    y = t -> q(t)[1]
+    z = t -> q(t)[2]
     u = control(sol)
 
     # styles
@@ -232,8 +230,9 @@ function spin_plot(sol; kwargs...) # hide
     y1 = -y2 # hide
 
     t = time_grid(sol) # hide
-    y = t -> state(sol)(t)[1] # hide
-    z = t -> state(sol)(t)[2] # hide
+    q = state(sol) # hide
+    y = t -> q(t)[1] # hide
+    z = t -> q(t)[2] # hide
     u = control(sol) # hide
 
     # styles # hide
@@ -269,18 +268,13 @@ end # hide
 nothing # hide
 ```
 
-And then plot again the solution. We can see that the first bang arc permits to reach the 
-horizontal singular line $z=\gamma/2\delta$ which is depicted with a dashed line. The second 
-bang arc is very short which explains why it is not well captured. We may refine the 
-grid around this bang arc to capture it well but in the following we propose to use an indirect method to refine this approximation.
+Below, we plot again the solution but inside the Bloch ball. We can see that the first bang arc permits to reach the horizontal singular line $z=\gamma/2\delta$ which is depicted with a dashed line. The second  bang arc is very short which explains why it is not well captured. We may refine the grid around this bang arc to capture it well but in the following we propose to use an indirect method to refine this approximation.
 
 ```@example main
 spin_plot(direct_sol; size=(700, 350))
 ```
 
-We extract now the useful information from the direct solution to provide an initial guess
-for the indirect method. For instance, we need the initial costate 
-together with the switching times between bang and sinular arcs and the final time.
+To make the indirect method converge we need a good initial guess. We extract below the useful information from the direct solution to provide an initial guess for the indirect method. We need the initial costate together with the switching times between bang and singular arcs and the final time.
 
 ```@example main
 t  = time_grid(direct_sol)
@@ -317,13 +311,7 @@ We introduce the pseudo-Hamiltonian
 H(q, p, u) = H_0(q, p) + u\, H_1(q, p)
 ```
 
-where $H_0(q, p) = p \cdot F_0(q)$ and $H_1(q, p) = p \cdot F_1(q)$
-are both Hamiltonian lifts. According to the maximisation condition 
-from the [Pontryagin Maximum Principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) (PMP), a bang arc occurs when 
-$H_1$ is nonzero and of constant sign along the arc. On the contrary
-the singular arcs are contained in $H_1 = 0$. If 
-$t \mapsto H_1(q(t), p(t)) = 0$ along an arc then its derivative is 
-also zero. Thus, along a singular arc we have also
+where $H_0(q, p) = p \cdot F_0(q)$ and $H_1(q, p) = p \cdot F_1(q)$ are both Hamiltonian lifts. According to the maximisation condition from the [Pontryagin Maximum Principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) (PMP), a bang arc occurs when $H_1$ is nonzero and of constant sign along the arc. On the contrary the singular arcs are contained in $H_1 = 0$. If  $t \mapsto H_1(q(t), p(t)) = 0$ along an arc then its derivative is also zero. Thus, along a singular arc we have also
 
 ```math
 \frac{\mathrm{d}}{\mathrm{d}t} H_1(q(t), p(t)) = 
@@ -334,29 +322,21 @@ where $\{H_0, H_1\}$ is the Poisson bracket of $H_0$ and $H_1$.
 
 !!! note "Lie and Poisson brackets"
 
-    Let $F_0$, $F_1$ be two smooth vector fields on a smooth manifold $M$ and $f$ a 
-    smooth function on $M$. Let $x$ be local coordinates. The *Lie bracket* of $F_0$ 
-    and $F_1$ is given by 
+    Let $F_0$, $F_1$ be two smooth vector fields on a smooth manifold $M$ and $f$ a smooth function on $M$. Let $x$ be local coordinates. The *Lie bracket* of $F_0$ and $F_1$ is given by 
     
     ```math
         [F_0,F_1] \coloneqq  F_0 \cdot F_1 - F_1 \cdot F_0,
     ```
 
-    with $(F_0 \cdot F_1)(x) = \mathrm{d} F_1(x) \cdot F_0(x)$.
-    The *Lie derivative* $\mathcal{L}_{F_0} f$ of $f$ along $F_0$ is simply written 
-    $F_0\cdot f$. Denoting $H_0$, $H_1$ the Hamiltonian lifts of $F_0$, $F_1$, then the 
-    *Poisson bracket* of $H_0$ and $H_1$ is
+    with $(F_0 \cdot F_1)(x) = \mathrm{d} F_1(x) \cdot F_0(x)$. The *Lie derivative* $\mathcal{L}_{F_0} f$ of $f$ along $F_0$ is simply written $F_0\cdot f$. Denoting $H_0$, $H_1$ the Hamiltonian lifts of $F_0$, $F_1$, then the *Poisson bracket* of $H_0$ and $H_1$ is
     
     ```math
         \{H_0,H_1\}  \coloneqq  \vec{H_0} \cdot H_1.
     ```
 
-    We also use the notation $H_{01}$ (resp. $F_{01}$) to write the bracket 
-    $\{H_0,H_1\}$ (resp. $[F_0,F_1]$) and so forth. Besides, since $H_0$, $H_1$ 
-    are Hamiltonian lifts, we have $\{H_0,H_1\}= p \cdot [F_0,F_1]$.
+    We also use the notation $H_{01}$ (resp. $F_{01}$) to write the bracket $\{H_0,H_1\}$ (resp. $[F_0,F_1]$) and so forth. Besides, since $H_0$, $H_1$ are Hamiltonian lifts, we have $\{H_0,H_1\}= p \cdot [F_0,F_1]$.
 
-We define next a function to plot the switching function $t \mapsto H_1(q(t), p(t))$ 
-and its derivative along the solution computed by the direct method.
+We define next a function to plot the switching function $t \mapsto H_1(q(t), p(t))$ and its derivative along the solution computed by the direct method.
 
 ```@raw html
 <article class="docstring">
@@ -405,10 +385,7 @@ end</code><button class="copy-button fa-solid fa-copy" aria-label="Copy this cod
 </article>
 ```
 
-We can notice on the plots below that maximisation condition from the PMP is not 
-satisfied. We can see that the switching function becomes negative along the first 
-bang arc but there is no switching from the control plot. Besides, we can see that along
-the first singular arc, the switching function is not always zero.
+We can notice on the plots below that maximisation condition from the PMP is not satisfied. We can see that the switching function becomes negative along the first bang arc but there is no switching from the control plot. Besides, we can see that along the first singular arc, the switching function is not always zero.
 
 ```@example main
 function switching_plot(sol, H1, H01; kwargs...) # hide
@@ -459,10 +436,7 @@ H01  = @Lie { H0, H1 }
 switching_plot(direct_sol, H1, H01; size=(700, 800))
 ```
 
-We aim to compute a better approximation of the solution thanks to indirect shooting.
-To do so, we need to define the three different flows associated to the three different 
-control laws in feedback form: bang control, singular control along the horizontal line
-and singular control along the vertical line. 
+We aim to compute a better approximation of the solution thanks to indirect shooting. To do so, we need to define the three different flows associated to the three different  control laws in feedback form: bang control, singular control along the horizontal line and singular control along the vertical line. 
 
 !!! note
 
@@ -483,36 +457,27 @@ and singular control along the vertical line.
         \end{aligned}
     ```
 
-    Along a singular arc, we have $H_1 = H_{01} = 0$, that is 
-    $p \cdot F_1 = p \cdot F_{01} = 0$. Since, $p$ is of dimension 2 and is nonzero, then
-    we have $\det(F_1, F_{01}) = y ( \gamma - 2 \delta z) = 0$. This gives us
-    the two singular lines. 
+    Along a singular arc, we have $H_1 = H_{01} = 0$, that is $p \cdot F_1 = p \cdot F_{01} = 0$. Since, $p$ is of dimension 2 and is nonzero, then we have $\det(F_1, F_{01}) = y ( \gamma - 2 \delta z) = 0$. This gives us the two singular lines. 
     
-    Differentiating $t \mapsto H_1(q(t), p(t)) = 0$ a second time along a singular 
-    arc gives
+    Differentiating $t \mapsto H_1(q(t), p(t)) = 0$ a second time along a singular arc gives
 
     ```math
         H_{001}(q(t), p(t)) + u(t)\, H_{101}(q(t), p(t)) = 0,
     ```
 
-    that is $p(t)$ is orthogonal to $F_{001}(q(t)) + u(t)\, F_{101}(q(t))$. Hence, 
-    the singular control is given by
+    that is $p(t)$ is orthogonal to $F_{001}(q(t)) + u(t)\, F_{101}(q(t))$. Hence, the singular control is given by
 
     ```math
         \det(F_1(q(t)), F_{001}(q(t))) + u(t) \, \det(F_1(q(t)), F_{101}(q(t))) = 0.
     ```
 
-    For $y=0$, $\det(F_1(q), F_{101}(q))$ is zero and thus the singular control is zero.
-    We denote it $u_0 \coloneqq 0$.
-    Along the horizontal singular line, that is for $z=\gamma/2\delta$, 
-    the control is given by 
+    For $y=0$, $\det(F_1(q), F_{101}(q))$ is zero and thus the singular control is zero. We denote it $u_0 \coloneqq 0$. Along the horizontal singular line, that is for $z=\gamma/2\delta$,  the control is given by 
 
     ```math
         u_s(y) \coloneqq \gamma (2\Gamma - \gamma) / (2 \delta y).
     ```
 
-    Note that we could have defined the singular control with the Hamiltonian
-    lifts $H_{001}$ and $H_{101}$. See the [Goddard tutorial](https://control-toolbox.org/docs/optimalcontrol/stable/tutorial-goddard.html#Indirect-method) for an example of such a computation.
+    Note that we could have defined the singular control with the Hamiltonian lifts $H_{001}$ and $H_{101}$. See the [Goddard tutorial](https://control-toolbox.org/docs/optimalcontrol/stable/tutorial-goddard.html#Indirect-method) for an example of such a computation.
 
 ```@example main
 @suppress_err begin # hide
@@ -533,16 +498,9 @@ fs = Flow(ocp, (q, p, tf) -> us(q[1]); tolerances...)
 nothing # hide
 ```
 
-With the previous flows, we can define the shooting function considering the sequence
-Bang-Singular-Bang-Singular. There are 3 switching times $t_1$, $t_2$ and $t_3$.
-The final time $t_f$ is unknown such as the initial costate. To reduce the sensitivy
-of the shooting function we also consider the states and costates at the switching times
-as unknowns and we add some matching conditions.
+With the previous flows, we can define the shooting function considering the sequence Bang-Singular-Bang-Singular. There are 3 switching times $t_1$, $t_2$ and $t_3$. The final time $t_f$ is unknown such as the initial costate. To reduce the sensitivy of the shooting function we also consider the states and costates at the switching times as unknowns and we add some matching conditions.
 
-Note that the final time is free, hence, in the normal case, $H = -p^0 = 1$ along the
-solution of the PMP. Considering this condition at the initial time, we obtain 
-$p_y(0) = -1$. At the entrance of the singular arcs, we must satisfy $H_1 = H_{01} = 0$.
-For the first singular arc, this leads to the conditions 
+Note that the final time is free, hence, in the normal case, $H = -p^0 = 1$ along the solution of the PMP. Considering this condition at the initial time, we obtain $p_y(0) = -1$. At the entrance of the singular arcs, we must satisfy $H_1 = H_{01} = 0$. For the first singular arc, this leads to the conditions 
 
 ```math
     - p_y(t_1) z_s + p_z(t_1) y(t_1) = z(t_1) - z_s = 0.
@@ -576,6 +534,8 @@ function shoot!(s, pz0, t1, t2, t3, tf, q1, p1, q2, p2, q3, p3)
     s[3] = p3[1]                          # H1 = H01 = 0 on the vertical
     s[4] = q3[1]                          # singular line, y=0
     s[5] = qf[2]                          # z(tf) = 0
+
+    # matching conditions
     s[ 6: 7] = q1 - q1_
     s[ 8: 9] = p1 - p1_
     s[10:11] = q2 - q2_
@@ -587,13 +547,9 @@ end
 nothing # hide
 ```
 
-We are now in position to solve the shooting equations. Due to the sensitivity of the 
-first singular arc, we need to improve the initial guess obtained from the direct method
-to make the Newton solver converge. To do so we set for the initial guess 
-$z(t_1) = z_s$ and $p_z(t_1) = p_y(t_1) z_s / y(t_1)$.
+We are now in position to solve the shooting equations. Due to the sensitivity of the first singular arc, we need to improve the initial guess obtained from the direct method to make the Newton solver converge. To do so, we set for the initial guess $z(t_1) = z_s$ and $p_z(t_1) = p_y(t_1) z_s / y(t_1)$.
 
-One can see below from the norm of the shooting function at the initial guess that 
-it is not very accurate.
+We can see below from the norm of the shooting function that the initial guess is not very accurate.
 
 ```@example main
 
@@ -612,7 +568,7 @@ end # hide
 println("Norm of the shooting function: ‖s‖ = ", norm(s), "\n")
 ```
 
-Finally, we can solve the shooting equations thanks to the [NonlinearSolve.jl](https://github.com/SciML/NonlinearSolve.jl) package and improve our solution.
+Finally, we can solve the shooting equations thanks to [NonlinearSolve](https://github.com/SciML/NonlinearSolve.jl) and improve our solution.
 
 ```@example main
 using NonlinearSolve
@@ -630,8 +586,8 @@ prob = NonlinearProblem(nle, ξ)
 # resolution of S=0
 global indirect_sol =      # hide
 @suppress_err begin # hide
-NonlinearSolve.solve(prob)      # hide
-indirect_sol = NonlinearSolve.solve(prob; abstol=1e-8, reltol=1e-8, show_trace=Val(true))
+NonlinearSolve.solve(prob, SimpleNewtonRaphson())      # hide
+indirect_sol = NonlinearSolve.solve(prob, SimpleNewtonRaphson(); abstol=1e-8, reltol=1e-8, show_trace=Val(true))
 end                 # hide
 
 # we retrieve the costate solution together with the times
@@ -661,7 +617,7 @@ end # hide
 println("Norm of the shooting function: ‖s‖ = ", norm(s), "\n")
 ```
 
-Let us plot the indirect solution. One can note that the second bang arc is well captured.
+Let us plot the solution from the indirect method. We can notice that the second bang arc is well captured by the indirect method compared to the direct method.
 
 ```@example main
 # concatenation of the flows with the switching times
@@ -674,8 +630,7 @@ indirect_sol = f((t0, tf), q0, [-1, pz0])
 spin_plot(indirect_sol; size=(700, 350))
 ```
 
-From the following plot, one can see that the maximisation condition from the PMP is 
-now well satisfied compared to the solution obtained from the direct method.
+From the following plot, we can conclude that the maximisation condition from the PMP is now well satisfied compared to the solution obtained from the direct method.
 
 ```@example main
 switching_plot(indirect_sol, H1, H01; size=(700, 800))
