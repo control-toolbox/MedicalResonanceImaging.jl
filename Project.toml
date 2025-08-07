@@ -1,7 +1,7 @@
 name = "MedicalResonanceImaging"
 uuid = "93e74489-f9a4-430a-8db2-2b89ccbb1b9e"
 authors = ["Olivier Cots <olivier.cots@irit.fr>"]
-version = "0.2.2"
+version = "0.2.3"
 
 [compat]
 julia = "1.10"
