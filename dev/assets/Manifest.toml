@@ -1308,7 +1308,7 @@ version = "0.3.2"
 [[deps.MedicalResonanceImaging]]
 path = "/home/runner/work/MedicalResonanceImaging.jl/MedicalResonanceImaging.jl"
 uuid = "93e74489-f9a4-430a-8db2-2b89ccbb1b9e"
-version = "0.2.1"
+version = "0.2.2"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
