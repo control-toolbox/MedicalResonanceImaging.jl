@@ -10,7 +10,7 @@ Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 
 [compat]
 Documenter = "1"
-NLPModelsIpopt = "0.10"
+NLPModelsIpopt = "0.11"
 NonlinearSolve = "4"
 OptimalControl = "1"
 OrdinaryDiffEq = "6"
