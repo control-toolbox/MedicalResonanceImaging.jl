@@ -87,10 +87,10 @@ Number of inequality constraint evaluations          = 0
 Number of equality constraint Jacobian evaluations   = 149
 Number of inequality constraint Jacobian evaluations = 0
 Number of Lagrangian Hessian evaluations             = 143
-Total seconds in IPOPT                               = 5.032
+Total seconds in IPOPT                               = 4.980
 
 EXIT: Optimal Solution Found.</code></pre><p>Then, we plot the solution thanks to Plots.</p><pre><code class="language-julia hljs">using Plots
-plt = plot(sol; size=(700, 500), label=&quot;N = &quot;*string(N))</code></pre><img src="saturation-666c8cef.svg" alt="Example block output"/><p>This rough approximation is then refine on a finer grid of 1000 points. This two steps resolution increases the speed of convergence. Note that we provide the previous solution as initialisation.</p><pre><code class="language-julia hljs">N = 1000
+plt = plot(sol; size=(700, 500), label=&quot;N = &quot;*string(N))</code></pre><img src="saturation-2fab2cc5.svg" alt="Example block output"/><p>This rough approximation is then refine on a finer grid of 1000 points. This two steps resolution increases the speed of convergence. Note that we provide the previous solution as initialisation.</p><pre><code class="language-julia hljs">N = 1000
 direct_sol = solve(
     ocp;
     grid_size=N,
@@ -136,9 +136,9 @@ Number of inequality constraint evaluations          = 0
 Number of equality constraint Jacobian evaluations   = 57
 Number of inequality constraint Jacobian evaluations = 0
 Number of Lagrangian Hessian evaluations             = 55
-Total seconds in IPOPT                               = 3.755
+Total seconds in IPOPT                               = 3.433
 
-EXIT: Optimal Solution Found.</code></pre><p>We can compare both solutions. The BSBS structure is revelead even if the second bang arc is not clearly demonstrated.</p><pre><code class="language-julia hljs">plot!(plt, direct_sol; label=&quot;N = &quot;*string(N), color=2)</code></pre><img src="saturation-de6ccb33.svg" alt="Example block output"/><div class="admonition is-info" id="Code-for-plotting-in-the-Bloch-ball-62e42b27420c2159"><header class="admonition-header">Code for plotting in the Bloch ball<a class="admonition-anchor" href="#Code-for-plotting-in-the-Bloch-ball-62e42b27420c2159" title="Permalink"></a></header><div class="admonition-body"><p>We define a custom plot function for plotting the solution inside the Bloch ball.</p><details><summary>Click to unfold and get the code of the custom plot function.</summary><pre><code class="language-julia hljs">using Plots.PlotMeasures
+EXIT: Optimal Solution Found.</code></pre><p>We can compare both solutions. The BSBS structure is revelead even if the second bang arc is not clearly demonstrated.</p><pre><code class="language-julia hljs">plot!(plt, direct_sol; label=&quot;N = &quot;*string(N), color=2)</code></pre><img src="saturation-db17ebc3.svg" alt="Example block output"/><div class="admonition is-info" id="Code-for-plotting-in-the-Bloch-ball-62e42b27420c2159"><header class="admonition-header">Code for plotting in the Bloch ball<a class="admonition-anchor" href="#Code-for-plotting-in-the-Bloch-ball-62e42b27420c2159" title="Permalink"></a></header><div class="admonition-body"><p>We define a custom plot function for plotting the solution inside the Bloch ball.</p><details><summary>Click to unfold and get the code of the custom plot function.</summary><pre><code class="language-julia hljs">using Plots.PlotMeasures
 function spin_plot(sol; kwargs...)
 
     y2 = cos(asin(zs))
@@ -179,7 +179,7 @@ function spin_plot(sol; kwargs...)
 
     return plot(state_plt, control_plt; layout=(1, 2), leftmargin=15px, bottommargin=15px, kwargs...)
 
-end</code></pre></details></div></div><p>Below, we plot the solution inside the Bloch ball. The first bang arc drives the trajectory to the horizontal singular line <span>$z = \gamma / (2\delta)$</span>, shown as a dashed line. The second bang arc is very short, which makes it difficult to capture accurately unless the grid is sufficiently fine. In the next section, we introduce an indirect method to refine this approximation.</p><pre><code class="language-julia hljs">spin_plot(direct_sol; size=(800, 400))</code></pre><img src="saturation-f1cd35c4.svg" alt="Example block output"/><p>To make the indirect method converge we need a good initial guess. We extract below the useful information from the direct solution to provide an initial guess for the indirect method. We need the initial costate together with the switching times between bang and singular arcs and the final time.</p><pre><code class="language-julia hljs">t  = time_grid(direct_sol)
+end</code></pre></details></div></div><p>Below, we plot the solution inside the Bloch ball. The first bang arc drives the trajectory to the horizontal singular line <span>$z = \gamma / (2\delta)$</span>, shown as a dashed line. The second bang arc is very short, which makes it difficult to capture accurately unless the grid is sufficiently fine. In the next section, we introduce an indirect method to refine this approximation.</p><pre><code class="language-julia hljs">spin_plot(direct_sol; size=(800, 400))</code></pre><img src="saturation-d854d525.svg" alt="Example block output"/><p>To make the indirect method converge we need a good initial guess. We extract below the useful information from the direct solution to provide an initial guess for the indirect method. We need the initial costate together with the switching times between bang and singular arcs and the final time.</p><pre><code class="language-julia hljs">t  = time_grid(direct_sol)
 q  = state(direct_sol)
 p  = costate(direct_sol)
 u  = control(direct_sol)
@@ -247,7 +247,7 @@ end</code></pre></details></div></div><p>We can notice on the plots below that m
 H1 = Lift(q -&gt; F1(q...))
 H01  = @Lie { H0, H1 }
 
-switching_plot(direct_sol, H1, H01; size=(700, 800))</code></pre><img src="saturation-b9433583.svg" alt="Example block output"/><p>We aim to compute a better approximation of the solution thanks to indirect shooting. To do so, we need to define the three different flows associated to the three different  control laws in feedback form: bang control, singular control along the horizontal line and singular control along the vertical line. </p><div class="admonition is-info" id="Note-7eb04a3bb9d48c15"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-7eb04a3bb9d48c15" title="Permalink"></a></header><div class="admonition-body"><p>Let us recall that <span>$\delta = \gamma - \Gamma$</span>. Then, for any <span>$q = (y,z)$</span> we have:</p><p class="math-container">\[    \begin{aligned}
+switching_plot(direct_sol, H1, H01; size=(700, 800))</code></pre><img src="saturation-da5e7bc7.svg" alt="Example block output"/><p>We aim to compute a better approximation of the solution thanks to indirect shooting. To do so, we need to define the three different flows associated to the three different  control laws in feedback form: bang control, singular control along the horizontal line and singular control along the vertical line. </p><div class="admonition is-info" id="Note-7eb04a3bb9d48c15"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-7eb04a3bb9d48c15" title="Permalink"></a></header><div class="admonition-body"><p>Let us recall that <span>$\delta = \gamma - \Gamma$</span>. Then, for any <span>$q = (y,z)$</span> we have:</p><p class="math-container">\[    \begin{aligned}
         F_{01}(q) &amp;= 
         -(\gamma - \delta z) \frac{\partial}{\partial y} + 
         \delta y \frac{\partial}{\partial z}, \\[0.5em]
@@ -343,104 +343,204 @@ shoot!(s, pz0, t1, t2, t3, tf, q1, p1, q2, p2, q3, p3)
 println(&quot;Norm of the shooting function: ‖s‖ = &quot;, norm(s), &quot;\n&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">WARNING: using MINPACK.fsolve in module Main conflicts with an existing identifier.
 Iter     f(x) inf-norm    Step 2-norm      Step time
 ------   --------------   --------------   --------------
-     1     1.729122e+01     0.000000e+00         0.234914
-     2     9.461468e-01     3.704268e+01        32.388657
-     3     2.839417e-01     7.649105e+00         0.004111
-     4     2.196746e-01     6.189414e+00         0.004166
-     5     4.899687e-02     1.555075e+01         0.004181
-     6     1.317601e-01     6.220299e+01         0.004095
-     7     3.647552e-01     1.399561e+02         0.004841
-     8     4.266673e-02     3.889313e+00         0.068628
-     9     1.862372e-01     1.555075e+01         0.004880
-    10     3.906691e-02     3.889347e+00         0.004168
-    11     6.814071e-02     3.887687e+00         0.004033
-    12     1.408918e-02     9.722099e-01         0.004196
-    13     4.460910e-02     3.887687e+00         0.004088
-    14     9.719317e-03     9.720021e-01         0.005062
-    15     4.894523e-02     3.887687e+00         0.005839
-    16     1.037975e-02     9.720452e-01         0.005870
-    17     1.722110e-02     9.719218e-01         0.006026
-    18     3.374491e-03     2.429959e-01         0.005779
-    19     1.050803e-02     9.719218e-01         0.005873
-    20     2.514214e-03     2.429847e-01         0.028921
-    21     1.236260e-02     9.719218e-01         0.004062
-    22     2.699892e-03     2.429877e-01         0.004066
-    23     4.405108e-03     2.429804e-01         0.004017
-    24     1.140801e-03     6.074605e-02         0.004006
-    25     2.529561e-03     2.429804e-01         0.004040
-    26     8.971382e-04     6.074537e-02         0.004060
-    27     3.105367e-03     2.429804e-01         0.004022
-    28     6.886897e-04     6.074555e-02         0.004013
-    29     1.114999e-03     6.074511e-02         0.004049
-    30     5.937321e-04     1.518634e-02         0.004099
-    31     6.886842e-04     6.074511e-02         0.004243
-    32     5.243157e-04     1.518629e-02         0.004095
-    33     7.780883e-04     6.074511e-02         0.004136
-    34     4.570424e-04     1.518630e-02         0.005995
-    35     7.861590e-04     6.074511e-02         0.006171
-    36     3.925009e-04     1.518631e-02         0.006210
-    37     7.834904e-04     6.074511e-02         0.019292
-    38     3.308893e-04     1.518631e-02         0.004181
-    39     7.850448e-04     6.074511e-02         0.003990
-    40     2.723456e-04     1.518631e-02         0.004160
-    41     7.867550e-04     6.074511e-02         0.004007
-    42     2.170459e-04     1.518631e-02         0.004567
-    43     7.883592e-04     6.074511e-02         0.004134
-    44     1.793299e-04     1.518631e-02         0.004079
-    45     7.899762e-04     6.074511e-02         0.004075
-    46     1.787759e-04     1.518631e-02         0.004123
-    47     2.839177e-04     1.518628e-02         0.004281
-    48     1.589777e-04     3.796573e-03         0.004134
-    49     1.503008e-04     1.518628e-02         0.004111
-    50     1.506639e-04     3.796570e-03         0.004106
-    51     1.968768e-04     1.518628e-02         0.005013
-    52     1.424838e-04     3.796571e-03         0.015601
-    53     1.995271e-04     1.518628e-02         0.004521
-    54     1.342526e-04     3.796571e-03         0.004178
-    55     1.981819e-04     1.518628e-02         0.004148
-    56     1.259569e-04     3.796571e-03         0.004090
-    57     1.983571e-04     1.518628e-02         0.004065
-    58     1.175940e-04     3.796571e-03         0.004072
-    59     1.986120e-04     1.518628e-02         0.004328
-    60     1.091543e-04     3.796571e-03         0.004054
-    61     1.988165e-04     1.518628e-02         0.004083
-    62     1.006264e-04     3.796571e-03         0.004079
-    63     1.990215e-04     1.518628e-02         0.012296
-    64     9.199662e-05     3.796571e-03         0.004073
-    65     7.942206e-05     3.796569e-03         0.004097
-    66     8.723076e-05     9.491426e-04         0.004141
-    67     7.506890e-05     3.796569e-03         0.004061
-    68     1.671472e-04     1.518628e-02         0.004218
-    69     6.666613e-05     3.796571e-03         0.004172
-    70     6.134117e-05     9.491423e-04         0.029331
-    71     4.993157e-05     3.796569e-03         0.004129
-    72     5.647322e-05     9.491424e-04         0.004147
-    73     4.774480e-05     3.796569e-03         0.004068
-    74     5.160141e-05     9.491424e-04         0.004029
-    75     4.774434e-05     3.796569e-03         0.004103
-    76     4.672440e-05     9.491424e-04         0.004102
-    77     4.776050e-05     3.796569e-03         0.012104
-    78     4.183995e-05     9.491424e-04         0.004022
-    79     4.777701e-05     3.796569e-03         0.004184
-    80     3.694530e-05     9.491424e-04         0.004061
-    81     4.779395e-05     3.796569e-03         0.004163
-    82     3.203693e-05     9.491424e-04         0.004092
-    83     4.781139e-05     3.796569e-03         0.004072
-    84     2.711018e-05     9.491424e-04         0.004059
-    85     4.782921e-05     3.796569e-03         0.004054
-    86     2.215861e-05     9.491424e-04         0.004169
-    87     4.784746e-05     3.796569e-03         0.004149
-    88     1.717278e-05     9.491424e-04         0.011936
-    89     4.786615e-05     3.796569e-03         0.004027
-    90     1.213745e-05     9.491424e-04         0.004075
-    91     4.788530e-05     3.796569e-03         0.004049
-    92     8.099735e-06     9.491424e-04         0.004010
-    93     2.324557e-05     1.548720e-03         0.004031
-    94     2.321026e-06     7.302771e-05         0.004018
-    95     2.874311e-06     7.491454e-05         0.003986
-    96     1.820909e-08     1.764393e-10         0.004030
-    97     4.602427e-09     9.546174e-12         0.004088
-    98     2.378469e-12     3.583026e-13         0.004066
+     1     1.729122e+01     0.000000e+00         0.239423
+     2     9.461468e-01     3.704268e+01        32.814624
+     3     2.839417e-01     7.649105e+00         0.004105
+     4     2.196746e-01     6.189414e+00         0.003985
+     5     4.899687e-02     1.555075e+01         0.004010
+     6     1.317601e-01     6.220299e+01         0.004049
+     7     3.647552e-01     1.399561e+02         0.004092
+     8     4.266673e-02     3.889313e+00         0.047428
+     9     1.862372e-01     1.555075e+01         0.004266
+    10     3.906691e-02     3.889347e+00         0.004165
+    11     6.814071e-02     3.887687e+00         0.004164
+    12     1.408918e-02     9.722099e-01         0.004265
+    13     4.460910e-02     3.887687e+00         0.004170
+    14     9.719317e-03     9.720021e-01         0.004196
+    15     4.894523e-02     3.887687e+00         0.004190
+    16     1.037975e-02     9.720452e-01         0.004366
+    17     1.722110e-02     9.719218e-01         0.005848
+    18     3.374491e-03     2.429959e-01         0.006071
+    19     1.050803e-02     9.719218e-01         0.006039
+    20     2.514214e-03     2.429847e-01         0.016128
+    21     1.236260e-02     9.719218e-01         0.004188
+    22     2.699892e-03     2.429877e-01         0.004077
+    23     4.405108e-03     2.429804e-01         0.004037
+    24     1.140801e-03     6.074605e-02         0.004080
+    25     2.529561e-03     2.429804e-01         0.004107
+    26     8.971382e-04     6.074537e-02         0.004113
+    27     3.105367e-03     2.429804e-01         0.004070
+    28     6.886897e-04     6.074555e-02         0.004270
+    29     1.114999e-03     6.074511e-02         0.004211
+    30     5.937321e-04     1.518634e-02         0.004259
+    31     6.886842e-04     6.074511e-02         0.004110
+    32     5.243157e-04     1.518629e-02         0.011960
+    33     7.780883e-04     6.074511e-02         0.004378
+    34     4.570424e-04     1.518630e-02         0.004287
+    35     7.861590e-04     6.074511e-02         0.004174
+    36     3.925009e-04     1.518631e-02         0.004306
+    37     7.834904e-04     6.074511e-02         0.004382
+    38     3.308893e-04     1.518631e-02         0.004248
+    39     7.850448e-04     6.074511e-02         0.004177
+    40     2.723456e-04     1.518631e-02         0.004337
+    41     7.867550e-04     6.074511e-02         0.013871
+    42     2.170459e-04     1.518631e-02         0.004455
+    43     7.883592e-04     6.074511e-02         0.004149
+    44     1.793299e-04     1.518631e-02         0.004086
+    45     7.899762e-04     6.074511e-02         0.004069
+    46     1.787759e-04     1.518631e-02         0.004086
+    47     2.839177e-04     1.518628e-02         0.004316
+    48     1.589777e-04     3.796573e-03         0.004091
+    49     1.503008e-04     1.518628e-02         0.004091
+    50     1.506639e-04     3.796570e-03         0.004260
+    51     1.968768e-04     1.518628e-02         0.010832
+    52     1.424838e-04     3.796571e-03         0.004239
+    53     1.995271e-04     1.518628e-02         0.004182
+    54     1.342526e-04     3.796571e-03         0.004197
+    55     1.981819e-04     1.518628e-02         0.004162
+    56     1.259569e-04     3.796571e-03         0.004285
+    57     1.983571e-04     1.518628e-02         0.004173
+    58     1.175940e-04     3.796571e-03         0.004199
+    59     1.986120e-04     1.518628e-02         0.004241
+    60     1.091543e-04     3.796571e-03         0.004448
+    61     1.988165e-04     1.518628e-02         0.012205
+    62     1.006264e-04     3.796571e-03         0.004247
+    63     1.990215e-04     1.518628e-02         0.004116
+    64     9.199662e-05     3.796571e-03         0.004069
+    65     7.942206e-05     3.796569e-03         0.004066
+    66     8.723076e-05     9.491426e-04         0.005560
+    67     7.506890e-05     3.796569e-03         0.004072
+    68     1.671472e-04     1.518628e-02         0.004101
+    69     6.666613e-05     3.796571e-03         0.004222
+    70     6.134117e-05     9.491423e-04         0.032089
+    71     4.993157e-05     3.796569e-03         0.007710
+    72     5.647322e-05     9.491424e-04         0.007207
+    73     4.774480e-05     3.796569e-03         0.006859
+    74     5.160141e-05     9.491424e-04         0.005201
+    75     4.774434e-05     3.796569e-03         0.004216
+    76     4.672440e-05     9.491424e-04         0.004548
+    77     4.776050e-05     3.796569e-03         0.005130
+    78     4.183995e-05     9.491424e-04         0.006665
+    79     4.777701e-05     3.796569e-03         0.007387
+    80     3.694530e-05     9.491424e-04         0.011399
+    81     4.779395e-05     3.796569e-03         0.004271
+    82     3.203693e-05     9.491424e-04         0.004245
+    83     4.781139e-05     3.796569e-03         0.004179
+    84     2.711018e-05     9.491424e-04         0.004318
+    85     4.782921e-05     3.796569e-03         0.004218
+    86     2.215861e-05     9.491424e-04         0.004266
+    87     4.784746e-05     3.796569e-03         0.004208
+    88     1.717278e-05     9.491424e-04         0.004346
+    89     4.786615e-05     3.796569e-03         0.012326
+    90     1.213745e-05     9.491424e-04         0.005233
+    91     4.788530e-05     3.796569e-03         0.004140
+    92     8.099735e-06     9.491424e-04         0.004176
+    93     2.324557e-05     1.548720e-03         0.004116
+    94     2.321026e-06     7.302771e-05         0.004160
+    95     2.874311e-06     7.491454e-05         0.004088
+    96     1.820909e-08     1.764393e-10         0.004115
+    97     4.602427e-09     9.546174e-12         0.004119
+    98     2.378469e-12     3.583026e-13         0.004221
+Iter     f(x) inf-norm    Step 2-norm      Step time
+------   --------------   --------------   --------------
+     1     1.729122e+01     0.000000e+00         0.011053
+     2     9.461468e-01     3.704268e+01         0.025891
+     3     2.839417e-01     7.649105e+00         0.006257
+     4     2.196746e-01     6.189414e+00         0.007759
+     5     4.899687e-02     1.555075e+01         0.007383
+     6     1.317601e-01     6.220299e+01         0.006916
+     7     3.647552e-01     1.399561e+02         0.006667
+     8     4.266673e-02     3.889313e+00         0.032525
+     9     1.862372e-01     1.555075e+01         0.004319
+    10     3.906691e-02     3.889347e+00         0.004153
+    11     6.814071e-02     3.887687e+00         0.004128
+    12     1.408918e-02     9.722099e-01         0.004106
+    13     4.460910e-02     3.887687e+00         0.004108
+    14     9.719317e-03     9.720021e-01         0.004105
+    15     4.894523e-02     3.887687e+00         0.004132
+    16     1.037975e-02     9.720452e-01         0.004267
+    17     1.722110e-02     9.719218e-01         0.011489
+    18     3.374491e-03     2.429959e-01         0.004287
+    19     1.050803e-02     9.719218e-01         0.004170
+    20     2.514214e-03     2.429847e-01         0.004237
+    21     1.236260e-02     9.719218e-01         0.004159
+    22     2.699892e-03     2.429877e-01         0.004291
+    23     4.405108e-03     2.429804e-01         0.004160
+    24     1.140801e-03     6.074605e-02         0.004224
+    25     2.529561e-03     2.429804e-01         0.004227
+    26     8.971382e-04     6.074537e-02         0.004413
+    27     3.105367e-03     2.429804e-01         0.013294
+    28     6.886897e-04     6.074555e-02         0.004230
+    29     1.114999e-03     6.074511e-02         0.004128
+    30     5.937321e-04     1.518634e-02         0.004041
+    31     6.886842e-04     6.074511e-02         0.004015
+    32     5.243157e-04     1.518629e-02         0.004053
+    33     7.780883e-04     6.074511e-02         0.004052
+    34     4.570424e-04     1.518630e-02         0.004058
+    35     7.861590e-04     6.074511e-02         0.004176
+    36     3.925009e-04     1.518631e-02         0.004243
+    37     7.834904e-04     6.074511e-02         0.010670
+    38     3.308893e-04     1.518631e-02         0.004282
+    39     7.850448e-04     6.074511e-02         0.004157
+    40     2.723456e-04     1.518631e-02         0.004165
+    41     7.867550e-04     6.074511e-02         0.004200
+    42     2.170459e-04     1.518631e-02         0.004194
+    43     7.883592e-04     6.074511e-02         0.004150
+    44     1.793299e-04     1.518631e-02         0.004167
+    45     7.899762e-04     6.074511e-02         0.004244
+    46     1.787759e-04     1.518631e-02         0.004330
+    47     2.839177e-04     1.518628e-02         0.011858
+    48     1.589777e-04     3.796573e-03         0.004152
+    49     1.503008e-04     1.518628e-02         0.004098
+    50     1.506639e-04     3.796570e-03         0.004139
+    51     1.968768e-04     1.518628e-02         0.004072
+    52     1.424838e-04     3.796571e-03         0.004049
+    53     1.995271e-04     1.518628e-02         0.004079
+    54     1.342526e-04     3.796571e-03         0.004061
+    55     1.981819e-04     1.518628e-02         0.004167
+    56     1.259569e-04     3.796571e-03         0.004207
+    57     1.983571e-04     1.518628e-02         0.010566
+    58     1.175940e-04     3.796571e-03         0.004228
+    59     1.986120e-04     1.518628e-02         0.004213
+    60     1.091543e-04     3.796571e-03         0.004184
+    61     1.988165e-04     1.518628e-02         0.004259
+    62     1.006264e-04     3.796571e-03         0.004151
+    63     1.990215e-04     1.518628e-02         0.004158
+    64     9.199662e-05     3.796571e-03         0.004169
+    65     7.942206e-05     3.796569e-03         0.004340
+    66     8.723076e-05     9.491426e-04         0.011866
+    67     7.506890e-05     3.796569e-03         0.004219
+    68     1.671472e-04     1.518628e-02         0.004125
+    69     6.666613e-05     3.796571e-03         0.004061
+    70     6.134117e-05     9.491423e-04         0.025344
+    71     4.993157e-05     3.796569e-03         0.004218
+    72     5.647322e-05     9.491424e-04         0.004180
+    73     4.774480e-05     3.796569e-03         0.004168
+    74     5.160141e-05     9.491424e-04         0.004236
+    75     4.774434e-05     3.796569e-03         0.004153
+    76     4.672440e-05     9.491424e-04         0.004187
+    77     4.776050e-05     3.796569e-03         0.010697
+    78     4.183995e-05     9.491424e-04         0.004172
+    79     4.777701e-05     3.796569e-03         0.004134
+    80     3.694530e-05     9.491424e-04         0.004056
+    81     4.779395e-05     3.796569e-03         0.004063
+    82     3.203693e-05     9.491424e-04         0.004077
+    83     4.781139e-05     3.796569e-03         0.004094
+    84     2.711018e-05     9.491424e-04         0.004113
+    85     4.782921e-05     3.796569e-03         0.004210
+    86     2.215861e-05     9.491424e-04         0.010652
+    87     4.784746e-05     3.796569e-03         0.004316
+    88     1.717278e-05     9.491424e-04         0.004150
+    89     4.786615e-05     3.796569e-03         0.004200
+    90     1.213745e-05     9.491424e-04         0.004153
+    91     4.788530e-05     3.796569e-03         0.004230
+    92     8.099735e-06     9.491424e-04         0.004169
+    93     2.324557e-05     1.548720e-03         0.004168
+    94     2.321026e-06     7.302771e-05         0.004180
+    95     2.874311e-06     7.491454e-05         0.004340
+    96     1.820909e-08     1.764393e-10         0.012096
+    97     4.602427e-09     9.546174e-12         0.004202
+    98     2.378469e-12     3.583026e-13         0.004119
 pz0 = -10.103027162172843
 t1 = 1.6450509469600776
 t2 = 37.323981285581745
@@ -453,7 +553,7 @@ f = f1 * (t1, fs) * (t2, f1) * (t3, f0)
 indirect_sol = f((t0, tf), q0, [-1, pz0])
 
 # plot in the Bloch ball
-spin_plot(indirect_sol; size=(800, 400))</code></pre><img src="saturation-e8ae985a.svg" alt="Example block output"/><p>From the following plot, we can conclude that the maximisation condition from the PMP is now well satisfied compared to the solution obtained from the direct method.</p><pre><code class="language-julia hljs">plt = switching_plot(indirect_sol, H1, H01; size=(700, 800))
+spin_plot(indirect_sol; size=(800, 400))</code></pre><img src="saturation-9e211829.svg" alt="Example block output"/><p>From the following plot, we can conclude that the maximisation condition from the PMP is now well satisfied compared to the solution obtained from the direct method.</p><pre><code class="language-julia hljs">plt = switching_plot(indirect_sol, H1, H01; size=(700, 800))
 lens!(plt, [37.2, 37.7], [    0, 4e-5], inset = (1, bbox(0.3, 0.2, 0.3, 0.4)))
 lens!(plt, [37.2, 37.7], [-5e-4, 5e-4], inset = (2, bbox(0.3, 0.3, 0.3, 0.4)))
-lens!(plt, [37.2, 37.7], [  0.5,  1.1], inset = (3, bbox(0.3, 0.2, 0.3, 0.4)))</code></pre><img src="saturation-c5aca263.svg" alt="Example block output"/><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-1"><a class="tag is-link" href="#citeref-1">1</a>B. Bonnard, O. Cots, S. Glaser, M. Lapert, D. Sugny &amp; Y. Zhang, *Geometric optimal control of the contrast imaging problem in nuclear magnetic resonance, IEEE Trans. Automat. Control, <strong>57</strong> (2012), no. 8, 1957–1969.</li><li class="footnote" id="footnote-2"><a class="tag is-link" href="#citeref-2">2</a>Bonnard, B.; Cots, O.; Rouot, J.; Verron, T. Time minimal saturation of a pair of spins and application in magnetic resonance imaging. Mathematical Control and Related Fields, 2020, 10 (1), pp.47-88. https://inria.hal.science/hal-01779377</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="bloch-equation.html">« Bloch equation</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Monday 29 September 2025 10:20">Monday 29 September 2025</span>. Using Julia version 1.11.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+lens!(plt, [37.2, 37.7], [  0.5,  1.1], inset = (3, bbox(0.3, 0.2, 0.3, 0.4)))</code></pre><img src="saturation-961cdb94.svg" alt="Example block output"/><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-1"><a class="tag is-link" href="#citeref-1">1</a>B. Bonnard, O. Cots, S. Glaser, M. Lapert, D. Sugny &amp; Y. Zhang, *Geometric optimal control of the contrast imaging problem in nuclear magnetic resonance, IEEE Trans. Automat. Control, <strong>57</strong> (2012), no. 8, 1957–1969.</li><li class="footnote" id="footnote-2"><a class="tag is-link" href="#citeref-2">2</a>Bonnard, B.; Cots, O.; Rouot, J.; Verron, T. Time minimal saturation of a pair of spins and application in magnetic resonance imaging. Mathematical Control and Related Fields, 2020, 10 (1), pp.47-88. https://inria.hal.science/hal-01779377</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="bloch-equation.html">« Bloch equation</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Monday 29 September 2025 11:27">Monday 29 September 2025</span>. Using Julia version 1.11.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
