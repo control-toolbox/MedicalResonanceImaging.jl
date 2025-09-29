@@ -244,8 +244,8 @@ tf = variable(direct_sol)
 t0 = 0
 pz0 = p(t0)[2]
 
-t_bang_1 = t[ (abs.(u.(t)) .≥ 0.75) .& (t .≤  5)]
-t_bang_2 = t[ (abs.(u.(t)) .≥ 0.75) .& (t .≥ 35)]
+t_bang_1 = t[ (abs.(u.(t)) .≥ 0.5) .& (t .≤  5)]
+t_bang_2 = t[ (abs.(u.(t)) .≥ 0.5) .& (t .≥ 35)]
 t1 = max(t_bang_1...)
 t2 = min(t_bang_2...)
 t3 = max(t_bang_2...)
