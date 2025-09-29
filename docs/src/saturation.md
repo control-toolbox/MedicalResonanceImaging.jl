@@ -135,13 +135,18 @@ nothing # hide
 
 We start to solve the problem with a direct method. The problem is transcribed into a NLP optimization problem by OptimalControl. The NLP problem is then solved by the well-known solver Ipopt thanks to NLPModelsIpopt.
 
-We first start with a coarse grid, with only 50 points. We provide an init to get a solution in the domain $y \le 0$.
+We first start with a coarse grid, with only 100 points. We provide an init consistent with a solution in the domain $y \le 0$.
 
 ```@example main
 using NLPModelsIpopt
-
 N = 100
-sol = solve(ocp; grid_size=N, init=(state=[-0.5, 0.0], ), disc_method=:gauss_legendre_2, print_level=4)
+sol = solve(
+    ocp; 
+    grid_size=N, 
+    init=(state=[-0.5, 0.0], ), 
+    disc_method=:gauss_legendre_2, 
+    print_level=4
+)
 nothing # hide
 ```
 
@@ -149,28 +154,34 @@ Then, we plot the solution thanks to Plots.
 
 ```@example main
 using Plots
-
 plt = plot(sol; size=(700, 500), label="N = "*string(N))
 ```
 
-This rough approximation is then refine on a finer grid of 500 points. This two steps resolution
+This rough approximation is then refine on a finer grid of 1000 points. This two steps resolution
 increases the speed of convergence. Note that we provide the previous solution as initialisation.
 
 ```@example main
 N = 1000
-direct_sol = solve(ocp; grid_size=N, init=sol, disc_method=:gauss_legendre_2, print_level=4, tol=1e-12)
+direct_sol = solve(
+    ocp; 
+    grid_size=N, 
+    init=sol, 
+    disc_method=:gauss_legendre_2, 
+    print_level=4, 
+    tol=1e-12
+)
 nothing # hide
 ```
 
 We can compare both solutions. The BSBS structure is revelead even if the second bang arc is not clearly demonstrated.
 
 ```@example main
-plot!(plt, direct_sol; label="N = "*string(N))
+plot!(plt, direct_sol; label="N = "*string(N), color=2)
 ```
 
 !!! note "Code for plotting in the Bloch ball"
 
-    We define a custom plot function to plot the solution inside the Bloch ball.
+    We define a custom plot function for plotting the solution inside the Bloch ball.
 
     ```@raw html
     <details><summary>Click to unfold and get the code of the custom plot function.</summary>
@@ -226,10 +237,10 @@ plot!(plt, direct_sol; label="N = "*string(N))
     </details>
     ```
 
-Below, we plot again the solution but inside the Bloch ball. We can see that the first bang arc permits to reach the horizontal singular line $z=\gamma/2\delta$ which is depicted with a dashed line. The second  bang arc is very short which explains why it is not well captured. We may refine the grid around this bang arc to capture it well but in the following we propose to use an indirect method to refine this approximation.
+Below, we plot the solution inside the Bloch ball. The first bang arc drives the trajectory to the horizontal singular line $z = \gamma / (2\delta)$, shown as a dashed line. The second bang arc is very short, which makes it difficult to capture accurately unless the grid is sufficiently fine. In the next section, we introduce an indirect method to refine this approximation.
 
 ```@example main
-spin_plot(direct_sol; size=(700, 350))
+spin_plot(direct_sol; size=(800, 400))
 ```
 
 To make the indirect method converge we need a good initial guess. We extract below the useful information from the direct solution to provide an initial guess for the indirect method. We need the initial costate together with the switching times between bang and singular arcs and the final time.
@@ -296,7 +307,7 @@ where $\{H_0, H_1\}$ is the Poisson bracket of $H_0$ and $H_1$.
 
 !!! note "Code for plotting the switching function and its derivative"
 
-    We define a function to plot the switching function $t \mapsto H_1(q(t), p(t))$ and its derivative along the solution computed by the direct method.
+    We define a function for plotting the switching function $t \mapsto H_1(q(t), p(t))$ and its derivative along the solution computed by the direct method.
 
     ```@raw html
     <details><summary>Click to unfold and get the code of the function.</summary>
@@ -419,9 +430,9 @@ fs = Flow(ocp, (q, p, tf) -> us(q[1]); options...)
 nothing # hide
 ```
 
-With the previous flows, we can define the shooting function considering the sequence Bang-Singular-Bang-Singular. There are 3 switching times $t_1$, $t_2$ and $t_3$. The final time $t_f$ is unknown such as the initial costate. To reduce the sensitivy of the shooting function we also consider the states and costates at the switching times as unknowns and we add some matching conditions.
+With the previous flows, we can define the shooting function considering the sequence given by the direct method: Bang-Singular-Bang-Singular. There are 3 switching times $t_1$, $t_2$ and $t_3$. The final time $t_f$ is unknown such as the initial costate. To reduce the sensitivy of the shooting function we also consider the states and costates at the switching times as unknowns and we add some matching conditions.
 
-Note that the final time is free, hence, in the normal case, $H = -p^0 = 1$ along the solution of the PMP. Considering this condition at the initial time, we obtain $p_y(0) = -1$. At the entrance of the singular arcs, we must satisfy $H_1 = H_{01} = 0$. For the first singular arc, this leads to the conditions 
+Note that the final time is free, hence, in the normal case, $H = -p^0 = 1$ along the solution of the PMP. Considering this condition at the initial time ($H$ is constant since the system is autonomous), we obtain $p_y(0) = -1$. At the entrance of the singular arcs, we must satisfy $H_1 = H_{01} = 0$. For the first singular arc, this leads to the conditions 
 
 ```math
     - p_y(t_1) z_s + p_z(t_1) y(t_1) = z(t_1) - z_s = 0.
@@ -514,6 +525,7 @@ We can use the [MINPACK.jl](https://github.com/sglyon/MINPACK.jl) package to sol
 using DifferentiationInterface
 import ForwardDiff
 backend = AutoForwardDiff()
+nothing # hide
 ```
 
 Let us define the problem to solve.
@@ -521,16 +533,18 @@ Let us define the problem to solve.
 ```@example main
 # auxiliary function with aggregated inputs
 shoot!(s, ξ) = shoot!(s, ξ[1], ξ[2:5]..., ξ[6:7], ξ[8:9], 
-                    ξ[10:11], ξ[12:13], ξ[14:15], ξ[16:17])
+    ξ[10:11], ξ[12:13], ξ[14:15], ξ[16:17])
 
 # Jacobian of the (auxiliary) shooting function
 jshoot!(js, ξ) = jacobian!(shoot!, similar(ξ), js, backend, ξ)
 nothing # hide
 ```
 
-We are now in position to solve the problem with the `hybrj` solver from MINPACK.jl through the `fsolve` function, providing the Jacobian. Let us solve the problem and retrieve the initial costate solution.
+We are now in position to solve the problem with the `hybrj` solver from MINPACK.jl through the `fsolve` function, providing the Jacobian. Let us solve the problem and retrieve the initial contate and the times (switching and final) from the solution.
 
 ```@example main
+using MINPACK
+
 # initial guess
 ξ = [ pz0 ; t1 ; t2 ; t3 ; tf ; q1 ; p1 ; q2 ; p2 ; q3 ; p3]
 
@@ -574,11 +588,15 @@ f = f1 * (t1, fs) * (t2, f1) * (t3, f0)
 indirect_sol = f((t0, tf), q0, [-1, pz0])
 
 # plot in the Bloch ball
-spin_plot(indirect_sol; size=(700, 350))
+spin_plot(indirect_sol; size=(800, 400))
 ```
 
 From the following plot, we can conclude that the maximisation condition from the PMP is now well satisfied compared to the solution obtained from the direct method.
 
 ```@example main
 switching_plot(indirect_sol, H1, H01; size=(700, 800))
+lens!(plt, [37.2, 37.7], [    0, 4e-5], inset = (1, bbox(0.3, 0.2, 0.3, 0.4)))
+lens!(plt, [37.2, 37.7], [-5e-4, 5e-4], inset = (2, bbox(0.3, 0.3, 0.3, 0.4)))
+lens!(plt, [37.2, 37.7], [  0.5,  1.1], inset = (3, bbox(0.3, 0.2, 0.3, 0.4)))
+plt # hide
 ```
