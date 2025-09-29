@@ -2,7 +2,7 @@
 
 julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "feafc23edf05c58a57f5fb6bdce569cd05e20ada"
+project_hash = "a09cdb4e2c8bdfd061adda517365d963f3dfd18c"
 
 [[deps.ADNLPModels]]
 deps = ["ADTypes", "ForwardDiff", "LinearAlgebra", "NLPModels", "Requires", "ReverseDiff", "SparseArrays", "SparseConnectivityTracer", "SparseMatrixColorings"]
@@ -1288,6 +1288,11 @@ git-tree-sha1 = "1e0228a030642014fe5cfe68c2c0a818f9e3f522"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.16"
 
+[[deps.MagneticResonanceImaging]]
+path = "/home/runner/work/MagneticResonanceImaging.jl/MagneticResonanceImaging.jl"
+uuid = "93e74489-f9a4-430a-8db2-2b89ccbb1b9e"
+version = "0.3.0"
+
 [[deps.ManualMemory]]
 git-tree-sha1 = "bcaef4fc7a0cfe2cba636d84cda54b5e4e4ca3cd"
 uuid = "d125e4d3-2237-4719-b19c-fa641b8a4667"
@@ -1329,11 +1334,6 @@ version = "2.28.6+0"
 git-tree-sha1 = "c13304c81eec1ed3af7fc20e75fb6b26092a1102"
 uuid = "442fdcdd-2543-5da2-b0f3-8c86c306513e"
 version = "0.3.2"
-
-[[deps.MedicalResonanceImaging]]
-path = "/home/runner/work/MedicalResonanceImaging.jl/MedicalResonanceImaging.jl"
-uuid = "93e74489-f9a4-430a-8db2-2b89ccbb1b9e"
-version = "0.2.4"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
