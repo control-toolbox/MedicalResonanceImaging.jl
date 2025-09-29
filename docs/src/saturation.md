@@ -549,7 +549,9 @@ using MINPACK
 ξ = [ pz0 ; t1 ; t2 ; t3 ; tf ; q1 ; p1 ; q2 ; p2 ; q3 ; p3]
 
 # resolution of S(ξ) = 0
+@suppress_err begin # hide
 indirect_sol = fsolve(shoot!, jshoot!, ξ, show_trace=true)
+end # hide
 
 # we retrieve the costate solution together with the times
 pz0 = indirect_sol.x[1]
