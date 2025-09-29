@@ -114,6 +114,8 @@ ocp = @def begin
     q = (y, z) ∈ R², state
     u ∈ R, control
 
+    y(t) ≤ 0.1 # for the symmetry
+
     q(0)  == q0
     q(tf) == [0, 0]
 
@@ -138,8 +140,8 @@ We first start with a coarse grid, with only 50 points. We provide an init to ge
 ```@example main
 using NLPModelsIpopt
 
-N = 50
-sol = solve(ocp; grid_size=N, init=(state=[-0.5, 0.0], ), print_level=4)
+N = 100
+sol = solve(ocp; grid_size=N, init=(state=[-0.5, 0.0], ), disc_method=:gauss_legendre_2, print_level=4)
 nothing # hide
 ```
 
@@ -155,13 +157,12 @@ This rough approximation is then refine on a finer grid of 500 points. This two 
 increases the speed of convergence. Note that we provide the previous solution as initialisation.
 
 ```@example main
-N = 500
-direct_sol = solve(ocp; grid_size=N, init=sol, print_level=4, tol=1e-12)
+N = 1000
+direct_sol = solve(ocp; grid_size=N, init=sol, disc_method=:gauss_legendre_2, print_level=4, tol=1e-12)
 nothing # hide
 ```
 
-We can compare both solutions. The BSBS structure is revelead even if the second bang arc is not clearly 
-demonstrated.
+We can compare both solutions. The BSBS structure is revelead even if the second bang arc is not clearly demonstrated.
 
 ```@example main
 plot!(plt, direct_sol; label="N = "*string(N))
@@ -243,8 +244,8 @@ tf = variable(direct_sol)
 t0 = 0
 pz0 = p(t0)[2]
 
-t_bang_1 = t[ (abs.(u.(t)) .≥ 0.25) .& (t .≤  5)]
-t_bang_2 = t[ (abs.(u.(t)) .≥ 0.25) .& (t .≥ 35)]
+t_bang_1 = t[ (abs.(u.(t)) .≥ 0.75) .& (t .≤  5)]
+t_bang_2 = t[ (abs.(u.(t)) .≥ 0.75) .& (t .≥ 35)]
 t1 = max(t_bang_1...)
 t2 = min(t_bang_2...)
 t3 = max(t_bang_2...)
@@ -410,11 +411,11 @@ u1 = 1                   # positive bang control
 us(y) = γ⋅(2Γ−γ)/(2δ⋅y)  # singular control: horizontal line
 
 # Flows
-tolerances = (abstol=1e-14, reltol=1e-10)
+options = (abstol=1e-14, reltol=1e-10)
 
-f0 = Flow(ocp, (q, p, tf) -> u0      ; tolerances...)
-f1 = Flow(ocp, (q, p, tf) -> u1      ; tolerances...)
-fs = Flow(ocp, (q, p, tf) -> us(q[1]); tolerances...)
+f0 = Flow(ocp, (q, p, tf) -> u0      ; options...)
+f1 = Flow(ocp, (q, p, tf) -> u1      ; options...)
+fs = Flow(ocp, (q, p, tf) -> us(q[1]); options...)
 nothing # hide
 ```
 
@@ -501,7 +502,7 @@ function fsolve(f, j, x; kwargs...)
         println("hybrj not supported. Replaced by NonlinearSolve even if it is not visible on the doc.")
         nle! = (s, ξ, λ) -> f(s, ξ)
         prob = NonlinearProblem(nle!, ξ)
-        sol = solve(prob; abstol=1e-8, reltol=1e-8, show_trace=Val(true))
+        sol = solve(prob, SimpleNewtonRaphson(); abstol=1e-8, reltol=1e-8, show_trace=Val(true))
         return MYSOL(sol.u)
     end
 end
@@ -519,11 +520,11 @@ Let us define the problem to solve.
 
 ```@example main
 # auxiliary function with aggregated inputs
-nle!(s, ξ) = shoot!(s, ξ[1], ξ[2:5]..., ξ[6:7], ξ[8:9], 
+shoot!(s, ξ) = shoot!(s, ξ[1], ξ[2:5]..., ξ[6:7], ξ[8:9], 
                     ξ[10:11], ξ[12:13], ξ[14:15], ξ[16:17])
 
 # Jacobian of the (auxiliary) shooting function
-jnle!(js, ξ) = jacobian!(nle!, similar(ξ), js, backend, ξ)
+jshoot!(js, ξ) = jacobian!(shoot!, similar(ξ), js, backend, ξ)
 nothing # hide
 ```
 
@@ -534,7 +535,7 @@ We are now in position to solve the problem with the `hybrj` solver from MINPACK
 ξ = [ pz0 ; t1 ; t2 ; t3 ; tf ; q1 ; p1 ; q2 ; p2 ; q3 ; p3]
 
 # resolution of S(ξ) = 0
-indirect_sol = fsolve(nle!, jnle!, ξ, show_trace=true)
+indirect_sol = fsolve(shoot!, jshoot!, ξ, show_trace=true)
 
 # we retrieve the costate solution together with the times
 pz0 = indirect_sol.x[1]
