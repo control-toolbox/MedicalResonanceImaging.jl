@@ -1,5 +1,5 @@
 using Aqua
-using MedicalResonanceImaging
+using MagneticResonanceImaging
 using Test
 
 #

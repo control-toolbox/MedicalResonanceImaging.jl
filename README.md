@@ -1,18 +1,18 @@
-# MedicalResonanceImaging.jl
+# MagneticResonanceImaging.jl
 
 <!-- 
 For instructions on how to customize this README.template.md and use the centralized workflow,
 please see the user guide: https://github.com/orgs/control-toolbox/discussions/67
 -->
 
-The MedicalResonanceImaging.jl repo is part of the [control-toolbox ecosystem](https://github.com/control-toolbox).
+The MagneticResonanceImaging.jl repo is part of the [control-toolbox ecosystem](https://github.com/control-toolbox).
 
 | **Category** | **Badge** |
 |-----------------------|-----------|
-| **Documentation** | [![Stable Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://control-toolbox.org/MedicalResonanceImaging.jl/stable/) [![Dev Docs](https://img.shields.io/badge/docs-dev-8A2BE2.svg)](https://control-toolbox.org/MedicalResonanceImaging.jl/dev/) |
-| **CI / Build** | [![Build Status](https://github.com/control-toolbox/MedicalResonanceImaging.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/control-toolbox/MedicalResonanceImaging.jl/actions/workflows/CI.yml?query=branch%3Amain) |
-| **Release / Version** | [![Release](https://img.shields.io/github/v/release/control-toolbox/MedicalResonanceImaging.jl.svg)](https://github.com/control-toolbox/MedicalResonanceImaging.jl/releases) |
-| **License** | [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/control-toolbox/MedicalResonanceImaging.jl/blob/master/LICENSE) |
+| **Documentation** | [![Stable Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://control-toolbox.org/MagneticResonanceImaging.jl/stable/) [![Dev Docs](https://img.shields.io/badge/docs-dev-8A2BE2.svg)](https://control-toolbox.org/MagneticResonanceImaging.jl/dev/) |
+| **CI / Build** | [![Build Status](https://github.com/control-toolbox/MagneticResonanceImaging.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/control-toolbox/MagneticResonanceImaging.jl/actions/workflows/CI.yml?query=branch%3Amain) |
+| **Release / Version** | [![Release](https://img.shields.io/github/v/release/control-toolbox/MagneticResonanceImaging.jl.svg)](https://github.com/control-toolbox/MagneticResonanceImaging.jl/releases) |
+| **License** | [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/control-toolbox/MagneticResonanceImaging.jl/blob/master/LICENSE) |
 
 ## About control-toolbox
 
@@ -39,8 +39,8 @@ The **control-toolbox** ecosystem brings together <a href="https://julialang.org
 
 ## Contributing
 
-[issue-url]: https://github.com/control-toolbox/MedicalResonanceImaging.jl/issues
-[first-good-issue-url]: https://github.com/control-toolbox/MedicalResonanceImaging.jl/contribute
+[issue-url]: https://github.com/control-toolbox/MagneticResonanceImaging.jl/issues
+[first-good-issue-url]: https://github.com/control-toolbox/MagneticResonanceImaging.jl/contribute
 
 If you think you found a bug or if you have a feature request / suggestion, feel free to open an [issue][issue-url].  
 Before opening a pull request, please start an issue or a discussion on the topic. 

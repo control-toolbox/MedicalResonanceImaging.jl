@@ -1,4 +1,4 @@
-# Optimal control in Medical Resonance Imaging
+# Optimal control in Magnetic Resonance Imaging
 
 ## Introduction
 
