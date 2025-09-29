@@ -487,7 +487,7 @@ end # hide
 println("Norm of the shooting function: ‖s‖ = ", norm(s), "\n")
 ```
 
-```@setup main-goddard
+```@setup main
 using NonlinearSolve  # interface to NLE solvers
 struct MYSOL
     x::Vector{Float64}
@@ -517,7 +517,7 @@ backend = AutoForwardDiff()
 
 Let us define the problem to solve.
 
-```@example main-goddard
+```@example main
 # auxiliary function with aggregated inputs
 nle!(s, ξ) = shoot!(s, ξ[1], ξ[2:5]..., ξ[6:7], ξ[8:9], 
                     ξ[10:11], ξ[12:13], ξ[14:15], ξ[16:17])
@@ -529,7 +529,10 @@ nothing # hide
 
 We are now in position to solve the problem with the `hybrj` solver from MINPACK.jl through the `fsolve` function, providing the Jacobian. Let us solve the problem and retrieve the initial costate solution.
 
-```@example main-goddard
+```@example main
+# initial guess
+ξ = [ pz0 ; t1 ; t2 ; t3 ; tf ; q1 ; p1 ; q2 ; p2 ; q3 ; p3]
+
 # resolution of S(ξ) = 0
 indirect_sol = fsolve(nle!, jnle!, ξ, show_trace=true)
 
