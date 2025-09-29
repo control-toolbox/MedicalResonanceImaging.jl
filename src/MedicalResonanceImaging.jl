@@ -1,5 +1,5 @@
-module MedicalResonanceImaging
+module MagneticResonanceImaging
 
 greet() = print("Hello World!")
 
-end # module MedicalResonanceImaging
+end # module MagneticResonanceImaging

@@ -32,8 +32,8 @@ jobs:
     with:
       template_file: README.template.md
       output_file: README.md
-      package_name: MedicalResonanceImaging        # package for INSTALL.md
-      repo_name: control-toolbox/MedicalResonanceImaging.jl        # repository for CONTRIBUTING.md links
-      doc_url: https://control-toolbox.org/MedicalResonanceImaging.jl
+      package_name: MagneticResonanceImaging        # package for INSTALL.md
+      repo_name: control-toolbox/MagneticResonanceImaging.jl        # repository for CONTRIBUTING.md links
+      doc_url: https://control-toolbox.org/MagneticResonanceImaging.jl
       assignee: "ocots"
     secrets: inherit

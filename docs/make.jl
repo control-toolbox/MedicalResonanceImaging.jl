@@ -23,7 +23,7 @@ cp(
     force=true,
 )
 
-repo_url = "github.com/control-toolbox/MedicalResonanceImaging.jl"
+repo_url = "github.com/control-toolbox/MagneticResonanceImaging.jl"
 
 # if draft is true, then the julia code from .md is not executed # debug
 # to disable the draft mode in a specific markdown file, use the following:
@@ -35,7 +35,7 @@ Draft = false
 makedocs(;
     draft=false,
     warnonly=:cross_references,
-    sitename="Medical Resonance Imaging",
+    sitename="Magnetic Resonance Imaging",
     format=Documenter.HTML(;
         repolink="https://" * repo_url,
         prettyurls=false,
