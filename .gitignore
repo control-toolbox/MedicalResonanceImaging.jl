@@ -43,3 +43,4 @@ Manifest.toml
 # Miscellaneous
 # --------------------
 .julia/  # Only if local project-specific .julia folder appears accidentally
+docs/tmp/
